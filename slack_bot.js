@@ -63,7 +63,6 @@ This bot demonstrates many of the core features of Botkit:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-
 if (!process.env.token) {
     console.log('Error: Specify token in environment');
     process.exit(1);
@@ -79,6 +78,10 @@ var controller = Botkit.slackbot({
 var bot = controller.spawn({
     token: process.env.token
 }).startRTM();
+
+
+
+
 
 
 controller.hears(['hello', 'hi'], 'direct_message,direct_mention,mention', function(bot, message) {
@@ -117,6 +120,46 @@ controller.hears(['call me (.*)', 'my name is (.*)'], 'direct_message,direct_men
         });
     });
 });
+
+
+controller.hears(['Help','help'], 'direct_message,direct_mention,mention', function(bot, message) {
+
+	bot.reply(message,'Search XXX … Search XXX by google custom search.\nCall me XXX … Tell the bot your nickname. Now you are friends.\nGive coin to xxx … give the cryptocrrency to XXX.\nPay to XXX … pay to XXX by cryptocrrency\nExchange to XXX … Exchage cryptocrenncy to Money ');
+
+});
+
+/*controller.hears(['search (.*)'], 'direct_message,direct_mention,mention', function(bot, message) {
+    var request = require('request');
+    var apiKey = XXXXXXXXXXXXXXXXXXXXXX;
+    var searchEngineId =  '016307541959239107161:cut0vi1hjcm';
+    var startNum= 1;
+    var item= message.match[1];
+
+    var option = 'key='+ apiKey + '&cx='+searchEngineId + '&q='+ item +'&alt=json&start=1';
+    console.log(option);
+    var url = 'https://www.googleapis.com/customsearch/v1?+'option;
+    console.log(url);
+
+    request(url, function(err,res,body){
+    if (!err && res.statusCode == 200 ){
+      console.log(body.name);
+
+      controller.storage.users.get(message.user, function(err, user) {
+              if (!body) {
+                  bot.reply(message, );
+              } else {
+                  bot.reply(message, 'Hello.');
+              }
+          });
+
+    }else{
+      console.log(res.statusCode);
+    }
+    }});
+});*/
+
+
+
 
 controller.hears(['what is my name', 'who am i'], 'direct_message,direct_mention,mention', function(bot, message) {
 
@@ -213,6 +256,8 @@ controller.hears(['shutdown'], 'direct_message,direct_mention,mention', function
         ]);
     });
 });
+
+
 
 
 controller.hears(['uptime', 'identify yourself', 'who are you', 'what is your name'],
