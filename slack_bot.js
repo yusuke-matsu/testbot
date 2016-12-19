@@ -122,6 +122,7 @@ controller.hears(['call me (.*)', 'my name is (.*)'], 'direct_message,direct_men
 });
 
 
+
 controller.hears(['Help','help'], 'direct_message,direct_mention,mention', function(bot, message) {
 
 	bot.reply(message,'Search XXX … Search XXX by google custom search.\nCall me XXX … Tell the bot your nickname. Now you are friends.\nGive coin to xxx … give the cryptocrrency to XXX.\nPay to XXX … pay to XXX by cryptocrrency\nExchange to XXX … Exchage cryptocrenncy to Money ');
