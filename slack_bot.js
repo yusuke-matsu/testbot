@@ -148,16 +148,15 @@ controller.hears(['search (.*)'], 'direct_message,direct_mention,mention', funct
 
     request.get(options, function (err,res,body){
     if (!err && res.statusCode == 200) {
-    	var data = JSON.parse(body);
-    	console.log(data);
 
-    	var urlArray = new Array() ;
-    	urlArray  = data["items"];
-
-    	for(var i = 0; i < urlArray.length; i++){
-    	bot.reply(message, urlArray[i].title+'\n'+urlArray[i].link);
-    	}
-       } else {
+        	//var data = JSON.parse(body);
+        	console.log(body);
+        	var urlArray = new Array() ;
+        	urlArray  = body["items"];
+        	for(var i = 0; i < urlArray.length; i++){
+        	bot.reply(message, urlArray[i].title+'\n'+urlArray[i].link);
+        	}
+           } else {
        console.log('error: '+ response.statusCode);
       }
      });
