@@ -147,7 +147,7 @@ controller.hears(['search (.*)'], 'direct_message,direct_mention,mention', funct
     };
 
     request.get(options, function (err,res,body){
-    if (!error && response.statusCode == 200) {
+    if (!err && res.statusCode == 200) {
     	var data = JSON.parse(body);
     	console.log(data);
 

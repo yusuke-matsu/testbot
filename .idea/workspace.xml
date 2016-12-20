@@ -25,8 +25,8 @@
       <file leaf-file-name="slack_bot.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/slack_bot.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="228">
-              <caret line="141" column="25" selection-start-line="141" selection-start-column="25" selection-end-line="141" selection-end-column="25" />
+            <state relative-caret-position="364">
+              <caret line="149" column="40" selection-start-line="149" selection-start-column="40" selection-end-line="149" selection-end-column="40" />
               <folding />
             </state>
           </provider>
@@ -273,8 +273,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/slack_bot.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="228">
-          <caret line="141" column="25" selection-start-line="141" selection-start-column="25" selection-end-line="141" selection-end-column="25" />
+        <state relative-caret-position="364">
+          <caret line="149" column="40" selection-start-line="149" selection-start-column="40" selection-end-line="149" selection-end-column="40" />
           <folding />
         </state>
       </provider>
