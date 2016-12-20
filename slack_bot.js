@@ -135,6 +135,7 @@ controller.hears(['search (.*)'], 'direct_message,direct_mention,mention', funct
     var searchEngineId =  '016307541959239107161:cut0vi1hjcm';
     var startNum= 1;
     var item= message.match[1];
+    console.log(item);
 
     var option = 'key='+ apiKey + '&cx='+searchEngineId + '&q='+ item +'&alt=json&start=1';
     console.log(option);
