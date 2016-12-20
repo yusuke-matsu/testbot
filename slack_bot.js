@@ -138,7 +138,7 @@ controller.hears(['search (.*)'], 'direct_message,direct_mention,mention', funct
 
     var option = 'key='+ apiKey + '&cx='+searchEngineId + '&q='+ item +'&alt=json&start=1';
     console.log(option);
-    var targetUrl = 'https://www.googleapis.com/customsearch/v1?+'option;
+    var targetUrl = 'https://www.googleapis.com/customsearch/v1?'+ option;
     console.log(url);
 
     var options = {
