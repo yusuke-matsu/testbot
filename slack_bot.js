@@ -129,35 +129,39 @@ controller.hears(['Help','help'], 'direct_message,direct_mention,mention', funct
 
 });
 
-/*controller.hears(['search (.*)'], 'direct_message,direct_mention,mention', function(bot, message) {
+controller.hears(['search (.*)'], 'direct_message,direct_mention,mention', function(bot, message) {
     var request = require('request');
-    var apiKey = XXXXXXXXXXXXXXXXXXXXXX;
+    var apiKey = 'AIzaSyBpobt0hBFSvLeT_olilvOTxm2531hzJZc';
     var searchEngineId =  '016307541959239107161:cut0vi1hjcm';
     var startNum= 1;
     var item= message.match[1];
 
     var option = 'key='+ apiKey + '&cx='+searchEngineId + '&q='+ item +'&alt=json&start=1';
     console.log(option);
-    var url = 'https://www.googleapis.com/customsearch/v1?+'option;
+    var targetUrl = 'https://www.googleapis.com/customsearch/v1?+'option;
     console.log(url);
 
-    request(url, function(err,res,body){
-    if (!err && res.statusCode == 200 ){
-      console.log(body.name);
+    var options = {
+      url: targetUrl,
+      json: true
+    };
 
-      controller.storage.users.get(message.user, function(err, user) {
-              if (!body) {
-                  bot.reply(message, );
-              } else {
-                  bot.reply(message, 'Hello.');
-              }
-          });
+    request.get(options, function (err,res,body){
+    if (!error && response.statusCode == 200) {
+    	var data = JSON.parse(body);
+    	console.log(data);
 
-    }else{
-      console.log(res.statusCode);
-    }
-    }});
-});*/
+    	var urlArray = new Array() ;
+    	urlArray  = data["items"];
+
+    	for(var i = 0; i < urlArray.length; i++){
+    	bot.reply(message, urlArray[i].title+'\n'+urlArray[i].link);
+    	}
+       } else {
+       console.log('error: '+ response.statusCode);
+      }
+     });
+});
 
 
 
