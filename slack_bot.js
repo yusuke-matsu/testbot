@@ -131,10 +131,13 @@ controller.hears(['Help','help'], 'direct_message,direct_mention,mention', funct
 
 controller.hears(['search (.*)'], 'direct_message,direct_mention,mention', function(bot, message) {
     var request = require('request');
-    var apiKey = 'AIzaSyBpobt0hBFSvLeT_olilvOTxm2531hzJZc';
+    var apiKey = '';
     var searchEngineId =  '016307541959239107161:cut0vi1hjcm';
     var startNum= 1;
     var item= message.match[1];
+    if(item == null){
+        	bot.reply(message,'Sorry I dont know about it' );
+        }
     console.log(item);
 
     var option = 'key='+ apiKey + '&cx='+searchEngineId + '&q='+ item +'&alt=json&start=1';
