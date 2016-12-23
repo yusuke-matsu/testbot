@@ -1,6 +1,6 @@
 applications:
 - name: bot-study
-command: token=xoxb-109350209699-L70yEavlPM3j67BBGToZXEyf node ./slack_bot.js
+command: token=xxxx node ./slack_bot.js
 path: .
 domain: mybluemix.net
 host: bot-study
