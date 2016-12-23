@@ -1,0 +1,8 @@
+applications:
+- name: bot-study
+command: node ./slack_bot.js
+path: .
+domain: mybluemix.net
+host: bot-study
+memory: 256M
+instances: 1
