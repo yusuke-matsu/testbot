@@ -31,7 +31,7 @@ This bot demonstrates many of the core features of Botkit:
 
   Find your bot inside Slack to send it a direct message.
 
-  Say: "Hello"
+  Say: "Hello
 
   The bot will reply "Hello!"
 
@@ -70,6 +70,7 @@ if (!process.env.token) {
 
 var Botkit = require('./lib/Botkit.js');
 var os = require('os');
+var request = require('request');
 
 var controller = Botkit.slackbot({
     debug: true,
@@ -79,11 +80,14 @@ var bot = controller.spawn({
     token: process.env.token
 }).startRTM();
 
+const port = process.env.VCAP_APP_PORT || 3000;
+
+controller.setupWebserver(port, function(err,webserver) {
+  controller.createWebhookEndpoints(controller.webserver);
+});
 
 
-
-
-
+//start to say Hello.
 controller.hears(['hello', 'hi'], 'direct_message,direct_mention,mention', function(bot, message) {
 
     bot.api.reactions.add({
@@ -106,6 +110,7 @@ controller.hears(['hello', 'hi'], 'direct_message,direct_mention,mention', funct
     });
 });
 
+// teach your nickname.
 controller.hears(['call me (.*)', 'my name is (.*)'], 'direct_message,direct_mention,mention', function(bot, message) {
     var name = message.match[1];
     controller.storage.users.get(message.user, function(err, user) {
@@ -121,16 +126,118 @@ controller.hears(['call me (.*)', 'my name is (.*)'], 'direct_message,direct_men
     });
 });
 
-
-
+// Help your talk. What adam can do.
 controller.hears(['Help','help'], 'direct_message,direct_mention,mention', function(bot, message) {
 
-	bot.reply(message,'Search XXX … Search XXX by google custom search.\nCall me XXX … Tell the bot your nickname. Now you are friends.\nGive coin to xxx … give the cryptocrrency to XXX.\nPay to XXX … pay to XXX by cryptocrrency\nExchange to XXX … Exchage cryptocrenncy to Money ');
+ bot.reply(message,'Search XXX- Search XXX by google custom search.\nCall me XXX - Tell the bot your nickname. Now you are friends.\npay … pay the cryptocrrency to someone.\ngive … give cryptocrrency to someone\nExchange to XXX … Exchage cryptocrenncy to Money ');
 
 });
 
+// give cryptocrrency to someone.
+controller.hears(['give','Give']),'direct_message,direct_mention,mention',function(bot,message){
+
+
+  var  giveAmount;
+  var  giveParson;
+  var  getPerson;
+
+  var askFromPerson = function(err,convo){
+
+   convo.ask('Who are you?\nPlease tell your name.',function(response,convo){
+      giveParson = response.text;
+      convo.askAmount();
+      convo.next();
+});};
+
+var askAmount = function(err,convo)  {
+     convo.ask('How much do you want to give?',function (response,convo){
+      giveAmount = response.text;
+
+      var options ={
+        url: 'https://testmatsu.mybluemix.net/query/'+giveParson;,
+        json: true
+      };
+
+      request.get(options,function(error,response,body){
+        if (!error && response.statusCode == 200){
+
+          console.log(body);
+
+          var currentBalance = body.amount
+
+          convo.say('personName:'+ queryPersonName+'\nbalance:'+ body.amount);
+          convo.next();
+
+        }else{
+          console.log('error: '+ response.statusCode);
+            convo.say('Sorry, you dont have balance');
+            convo.next();
+        }
+      }
+
+     });
+
+};
+
+
+
+
+
+
+
+/*      var options ={
+        url: 'https://testmatsu.mybluemix.net/query/'+giveParson,
+        json: true
+      };
+
+      request.get(options,function(error,response,body){
+        if (!error && response.statusCode == 200){
+          console.log(body);
+          convo.say('personName:'+ giveParson+'\nbalance:'+ body.amount);
+          convo.askToPersonName();
+          convo.next();
+        }else{
+          console.log('error: '+ response.statusCode);
+            convo.say('Sorry, you need balace or try later.');
+            convo.next();
+        }
+      });
+  });*/
+
+  var askToPersonName = function(err,convo){
+       convo.ask('who do you want to give?'function(response,convo){
+         getPerson = response.text;
+         var options ={
+           url: 'https://testmatsu.mybluemix.net/query/'+getPerson,
+           json: true
+         };
+
+         request.get(options,function(error,response,body){
+
+           if (!error && response.statusCode == 200){
+             console.log(body);
+             convo.say('personName:'+ giveParson+'\nbalance:'+ body.amount);
+             convo.askAmount();
+             convo.next();
+           }else{
+             console.log('error: '+ response.statusCode);
+               convo.say('Sorry, you need balace or try later.');
+               convo.next();
+           }
+         });
+       }
+     );
+  }
+
+
+
+
+  bot.startConversation(message,askFromPerson);
+}
+
+// Serch your word by google customsearch
 controller.hears(['search (.*)'], 'direct_message,direct_mention,mention', function(bot, message) {
-    var request = require('request');
+
     var apiKey = '';
     var searchEngineId =  '016307541959239107161:cut0vi1hjcm';
     var startNum= 1;
@@ -166,9 +273,7 @@ controller.hears(['search (.*)'], 'direct_message,direct_mention,mention', funct
      });
 });
 
-
-
-
+// Ask your name to adam
 controller.hears(['what is my name', 'who am i'], 'direct_message,direct_mention,mention', function(bot, message) {
 
     controller.storage.users.get(message.user, function(err, user) {
@@ -237,7 +342,121 @@ controller.hears(['what is my name', 'who am i'], 'direct_message,direct_mention
     });
 });
 
+//To pay cryptocrrency to someone
+controller.hears(['pay','Pay'], 'direct_message,direct_mention,mention', function(bot, message) {
+	   var amount;
+	   var personName;
 
+	   var askPerson = function(err,convo){
+	   	convo.ask('Who do you want to pay?\nPlease tell me person name.If you want to quit, say quit.\nIf you want to know this service detail, say help ', [
+	            {
+	                pattern: 'quit',
+	                callback: function(response, convo) {
+	                    convo.say('OK!');
+	                    convo.next();
+	                }
+	            },
+	        {
+	            pattern: 'help',
+	            callback: function(response, convo) {
+	                convo.say('this service means to give cryptocrrency to your entered name. If you want to give cryptocrrency, please enter name and amount.');
+	                convo.next();
+	            }
+	        },	{
+	            default: true,
+	            callback:function(response, convo) {
+	              personName = response.text;
+	              console.log(personName);
+	              //data.personName = personName;
+	              askAmount(response,convo);
+	              convo.next();
+	            }
+
+	        }])};
+
+	    var askAmount = function(response,convo){
+
+	     convo.ask('how much?',function(response, convo) {
+
+	    	if(isNaN(parseInt(response.text))){
+
+	         convo.say('please enter number and start from the begging');
+	         convo.next();
+
+	        }else{
+
+	         amount = response.text;
+			 //data.amount = amount;
+			 console.log('######'+ personName);
+			 console.log('######'+ amount);
+
+			 var options ={
+			  url:'https://testmatsu.mybluemix.net/invoke/issue',
+			  form: { personName: personName,
+                       amount: amount
+               },
+               json: true
+			 };
+
+			 request.post(options, function(error, response, body){
+
+			  if (!error && response.statusCode == 200) {
+	           convo.say('done');
+	           convo.next();
+	          } else {
+	           console.log('error: '+ response.statusCode);
+	           convo.say('sorry try again later');
+	           convo.next();
+			  }
+			 });
+			}
+	     }
+	      );};
+	   bot.startConversation(message,askPerson);
+	});
+//ask adam, how much do someone have cryptocrrency
+controller.hears(['query balance'], 'direct_message,direct_mention,mention', function(bot, message) {
+
+	   var queryPersonName;
+
+	   var queryPerson = function(err,convo){
+	   	convo.ask('Whose balance do you want to know ?\nPlease tell me person name.If you want to quit, say quit.', [
+	            {
+	                pattern: 'quit',
+	                callback: function(response, convo) {
+	                    convo.say('OK!');
+	                    convo.next();
+	                }
+	            },
+	       	{
+	            default: true,
+	            callback:function(response, convo) {
+	              queryPersonName = response.text;
+	              console.log(queryPersonName);
+	              //answerBalance(response,convo);
+	              var options ={
+	              	url: 'https://testmatsu.mybluemix.net/query/'+queryPersonName,
+	                json: true
+	              };
+
+	              request.get(options,function(error,response,body){
+	              	if (!error && response.statusCode == 200){
+	              		console.log(body);
+	              		convo.say('personName:'+ queryPersonName+'\nbalance:'+ body.amount);
+	              		convo.next();
+	              	}else{
+	              		console.log('error: '+ response.statusCode);
+	                    convo.say('sorry try again later');
+	                    convo.next();
+	              	}
+	              });
+	            }
+	        }]);};
+
+	   bot.startConversation(message,queryPerson);
+	});
+
+// end of conversation
 controller.hears(['shutdown'], 'direct_message,direct_mention,mention', function(bot, message) {
 
     bot.startConversation(message, function(err, convo) {
@@ -265,9 +484,7 @@ controller.hears(['shutdown'], 'direct_message,direct_mention,mention', function
     });
 });
 
-
-
-
+// ask adam about himself
 controller.hears(['uptime', 'identify yourself', 'who are you', 'what is your name'],
     'direct_message,direct_mention,mention', function(bot, message) {
 
