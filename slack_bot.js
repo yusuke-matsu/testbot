@@ -136,7 +136,6 @@ controller.hears(['Help','help'], 'direct_message,direct_mention,mention', funct
 // give cryptocrrency to someone.
 controller.hears(['give','Give']),'direct_message,direct_mention,mention',function(bot,message){
 
-
   var  giveAmount;
   var  giveParson;
   var  getPerson;
@@ -149,7 +148,7 @@ controller.hears(['give','Give']),'direct_message,direct_mention,mention',functi
       convo.next();
 });};
 
-var askAmount = function(err,convo)  {
+  var askAmount = function(err,convo)  {
      convo.ask('How much do you want to give?',function (response,convo){
       giveAmount = response.text;
 
@@ -160,31 +159,23 @@ var askAmount = function(err,convo)  {
 
       request.get(options,function(error,response,body){
         if (!error && response.statusCode == 200){
-
           console.log(body);
-
           var currentBalance = body.amount
-
-          convo.say('personName:'+ queryPersonName+'\nbalance:'+ body.amount);
-          convo.next();
-
+          if(parseInt(currentBalance)-giveAmount<=0 ){
+            convo.say('you dont have enough balance, please check your balance');
+            convo.next();
+          }else {
+            convo.askToPersonName();
+            convo.next();
+            }
         }else{
           console.log('error: '+ response.statusCode);
             convo.say('Sorry, you dont have balance');
             convo.next();
         }
       }
-
      });
-
 };
-
-
-
-
-
-
-
 /*      var options ={
         url: 'https://testmatsu.mybluemix.net/query/'+giveParson,
         json: true
@@ -204,9 +195,11 @@ var askAmount = function(err,convo)  {
       });
   });*/
 
+
   var askToPersonName = function(err,convo){
        convo.ask('who do you want to give?'function(response,convo){
          getPerson = response.text;
+
          var options ={
            url: 'https://testmatsu.mybluemix.net/query/'+getPerson,
            json: true
@@ -496,6 +489,7 @@ controller.hears(['uptime', 'identify yourself', 'who are you', 'what is your na
              '>. I have been running for ' + uptime + ' on ' + hostname + '.');
 
     });
+
 
 function formatUptime(uptime) {
     var unit = 'second';
