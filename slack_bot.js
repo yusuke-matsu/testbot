@@ -134,99 +134,89 @@ controller.hears(['Help','help'], 'direct_message,direct_mention,mention', funct
 });
 
 // give cryptocrrency to someone.
-controller.hears(['give','Give']),'direct_message,direct_mention,mention',function(bot,message){
-
+controller.hears(['give','Give'], 'direct_message,direct_mention,mention',function(bot,message) {
   var  giveAmount;
-  var  giveParson;
+  var  givePerson;
   var  getPerson;
 
   var askFromPerson = function(err,convo){
-
-   convo.ask('Who are you?\nPlease tell your name.',function(response,convo){
-      giveParson = response.text;
-      convo.askAmount();
-      convo.next();
-});};
-
+   convo.ask('Who are you?\nPlease tell your name.',function(response,convo)[
+           {
+               pattern: 'quit',
+               callback: function(response, convo) {
+                   convo.say('OK!');
+                   convo.next();
+               }
+           },
+       {
+           pattern: 'help',
+           callback: function(response, convo) {
+               convo.say('this service means to give cryptocrrency to someone. You need to enter your name, amount and person name who you want to give  ');
+               convo.next();
+           }
+       },	{
+           default: true,
+           callback:function(response, convo) {
+             givePerson = response.text;
+             console.log(givePerson);
+             askAmount(response,convo);
+             convo.next();
+           }
+       }])};
   var askAmount = function(err,convo)  {
      convo.ask('How much do you want to give?',function (response,convo){
       giveAmount = response.text;
 
       var options ={
-        url: 'https://testmatsu.mybluemix.net/query/'+giveParson;,
+        url: 'https://testmatsu.mybluemix.net/query/'+ givePersone,
         json: true
       };
 
       request.get(options,function(error,response,body){
+
         if (!error && response.statusCode == 200){
-          console.log(body);
-          var currentBalance = body.amount
-          if(parseInt(currentBalance)-giveAmount<=0 ){
-            convo.say('you dont have enough balance, please check your balance');
+          var currentBalance = body.amount;
+          if (parseInt(currentBalance)-parseInt(giveAmount)<0) {
+            convo.say('You dont heve enough money!!');
             convo.next();
           }else {
             convo.askToPersonName();
             convo.next();
-            }
+          }
         }else{
           console.log('error: '+ response.statusCode);
-            convo.say('Sorry, you dont have balance');
-            convo.next();
-        }
-      }
-     });
-};
-/*      var options ={
-        url: 'https://testmatsu.mybluemix.net/query/'+giveParson,
-        json: true
-      };
-
-      request.get(options,function(error,response,body){
-        if (!error && response.statusCode == 200){
-          console.log(body);
-          convo.say('personName:'+ giveParson+'\nbalance:'+ body.amount);
-          convo.askToPersonName();
-          convo.next();
-        }else{
-          console.log('error: '+ response.statusCode);
-            convo.say('Sorry, you need balace or try later.');
+            convo.say('Sorry try again later or You dont have balance');
             convo.next();
         }
       });
-  });*/
-
+    });
+};
 
   var askToPersonName = function(err,convo){
-       convo.ask('who do you want to give?'function(response,convo){
+       convo.ask('who do you want to give?',function(response,convo){
          getPerson = response.text;
 
          var options ={
-           url: 'https://testmatsu.mybluemix.net/query/'+getPerson,
+           url: 'https://testmatsu.mybluemix.net/invoke/XXXX',
            json: true
          };
 
-         request.get(options,function(error,response,body){
+         request.post(options,function(error,response,body){
 
            if (!error && response.statusCode == 200){
-             console.log(body);
-             convo.say('personName:'+ giveParson+'\nbalance:'+ body.amount);
-             convo.askAmount();
+             convo.say('done');
              convo.next();
            }else{
              console.log('error: '+ response.statusCode);
-               convo.say('Sorry, you need balace or try later.');
+               convo.say('Sorry try again later');
                convo.next();
            }
          });
        }
      );
-  }
-
-
-
-
+  };
   bot.startConversation(message,askFromPerson);
-}
+});
 
 // Serch your word by google customsearch
 controller.hears(['search (.*)'], 'direct_message,direct_mention,mention', function(bot, message) {
